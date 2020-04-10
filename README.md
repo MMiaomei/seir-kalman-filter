@@ -8,7 +8,7 @@
   
 3. Estimate model variables (`S,E,I,R`) and model parameter `beta`, which controls the rate of spread.
 
-4. The observed data is a state's number of infected patients each day.
+4. The observed data is a state's number of infected patients each day. See [Jupyter notebook](data/GetStateData.ipynb).
 
 5. Use an unscented Kalman filter with default parameter settings.
 
