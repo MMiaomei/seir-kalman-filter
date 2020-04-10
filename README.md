@@ -22,3 +22,5 @@
 - The model breaks down at long time predictions (i.e., populations < 0).
 
 ## Example output
+
+![alt text](/imgs/example_output.png)
