@@ -1,4 +1,4 @@
-function x = seirStateFcn(x) 
+function x = seirStateFcn(x,u) 
 % seirStateFcn Discrete-time approximation to SEIR for fixed parameters
 % Sample time is 0.5 day.
 %
@@ -23,22 +23,23 @@ function x = seirStateFcn(x)
 % MATLAB Coder.
 
 % Euler integration of continuous-time dynamics x'=f(x) with sample time dt
-dt = 0.5;                               % [days] Sample time
-x = x + seirStateFcnContinuous(x)*dt;
-x = x + seirStateFcnContinuous(x)*dt;
+dt = 0.5;                               % [days] Sample time is 1/2 day
+x = x + seirStateFcnContinuous(x,u)*dt;   % ... step forward 2x 1/2 day
+x = x + seirStateFcnContinuous(x,u)*dt;   % ... is 1 day.
 end
 
-function dxdt = seirStateFcnContinuous(x)
+function dxdt = seirStateFcnContinuous(x,u)
 %seirStateFcnContinuous Evaluate the SEIR for fixed parameters.
-sigma = 1/5.2;
-gamma = 1/2.3;
-N = 6939373;
+
+N = u.N; %6939373;            % MA population
+sigma = 1/5.2;          % Incubation rate [1/days]
+gamma = 1/2.3;          % Recovery rate [1/days]
 
 S = x(1);
 E = x(2);
 I = x(3);
 R = x(4);
-beta  = x(5);
+beta  = x(5);           % Rate of spread 
 
 dxdt = [(-beta*S*I/N); ...
         beta*S*I/N - sigma*E; ...

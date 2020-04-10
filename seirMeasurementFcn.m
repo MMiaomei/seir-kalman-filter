@@ -21,7 +21,7 @@ function yk = seirMeasurementFcn(xk)
 % The tag %#codegen must be included if you wish to generate code with 
 % MATLAB Coder.
 
-% The measurements,
+% We measure only the number of infected.
 S = xk(1);
 E = xk(2);
 I = xk(3);
