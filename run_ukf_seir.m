@@ -73,7 +73,7 @@ end
 day_label_future = string(datetime(d(end,[3,1,2]),'Format','dd-MMM-yyyy')+days(1:future_days));
 
 %figure();
-labels = {'x_1,S'; 'x_2,E'; 'x_3,I'; 'x_4,R'; 'x_5,beta'};
+labels = {'S (x_1)'; 'E (x_2)'; 'I (x_3)'; 'R (x_4)'; 'beta (x_5)'};
 for k=1:5
     subplot(5,1,k);
     plot(timeVector,xCorrectedUKF(:,k), 'b', 'LineWidth', 2);
@@ -87,6 +87,7 @@ for k=1:5
     ylabel(labels{k});
     axis tight
     grid on
+    xlabel('Days since first reported infections')
 end
 subplot(5,1,1); title(['State = ' state])
 subplot(5,1,3)
@@ -105,4 +106,4 @@ set(gca, 'XTickLabel', [day_label,day_label_future])
 xtickangle(90)
 subplot(5,1,5)
 title(['Last estimate of beta = ' num2str(xCorrectedUKF(end,5),3) ', std = ' num2str(squeeze(xCorrectedstd(end,5,5)),3)])
-
+xlabel('')
