@@ -62,7 +62,7 @@ for k=1:Nsteps
 end
 
 % Predict the future.
-future_days = 30;                       % Steps in the future
+future_days = 20;                       % Steps in the future
 xPredictedUKF = zeros(future_days,5);   % Predicted state estimates
 xPredictedstd = zeros(future_days,5,5);
 for k=1:future_days
