@@ -25,13 +25,14 @@ function x = seirStateFcn(x)
 % Euler integration of continuous-time dynamics x'=f(x) with sample time dt
 dt = 0.5;                               % [days] Sample time
 x = x + seirStateFcnContinuous(x)*dt;
+x = x + seirStateFcnContinuous(x)*dt;
 end
 
 function dxdt = seirStateFcnContinuous(x)
 %seirStateFcnContinuous Evaluate the SEIR for fixed parameters.
 sigma = 1/5.2;
 gamma = 1/2.3;
-N = 1000;
+N = 6939373;
 
 S = x(1);
 E = x(2);

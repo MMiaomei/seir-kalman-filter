@@ -4,7 +4,7 @@ N = 6939373;        % population of massachusetts
 
 % Initial state guess.
                     %S; E; I; R; beta
-initialStateGuess = [N; 0; 2; 0; 2.2];
+initialStateGuess = [N; 0; 2; 0; 2];
 
 % Construct the filter
 ukf = unscentedKalmanFilter(...

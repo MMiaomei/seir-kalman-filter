@@ -6,7 +6,7 @@ function dydt = seir1(t,y)
 %   Jacek Kierzenka and Lawrence F. Shampine
 %   Copyright 1984-2014 The MathWorks, Inc.
 
-N = 1000;
+N = 6939373;
 beta  = y(5); %2.2;
 sigma = 1/5.2;
 gamma = 1/2.3;
