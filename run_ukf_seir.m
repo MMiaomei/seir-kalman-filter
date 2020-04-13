@@ -34,6 +34,10 @@ load(['data/' state '.mat']);
 yMeas      = I;
 timeVector = (1:length(I));
 
+% Limit date range
+%yMeas = yMeas(1:end);
+%timeVector = timeVector(1:end);
+
 % Perform the filtering
 
 Nsteps        = length(yMeas);      % Number of time steps
@@ -62,7 +66,7 @@ for k=1:Nsteps
 end
 
 % Predict the future.
-future_days = 20;                       % Steps in the future
+future_days = 25;                       % Steps in the future
 xPredictedUKF = zeros(future_days,5);   % Predicted state estimates
 xPredictedstd = zeros(future_days,5,5);
 for k=1:future_days
@@ -73,7 +77,7 @@ end
 day_label_future = string(datetime(d(end,[3,1,2]),'Format','dd-MMM-yyyy')+days(1:future_days));
 
 %figure();
-labels = {'S (x_1)'; 'E (x_2)'; 'I (x_3)'; 'R (x_4)'; 'beta (x_5)'};
+labels = {'Susceptible'; 'Exposed'; 'Infectious'; 'Removed'; '\beta'};
 for k=1:5
     subplot(5,1,k);
     plot(timeVector,xCorrectedUKF(:,k), 'b', 'LineWidth', 2);
@@ -88,8 +92,9 @@ for k=1:5
     axis tight
     grid on
     xlabel('Days since first reported infections')
+    set(gca, 'FontSize', 12)
 end
-subplot(5,1,1); title(['State = ' state])
+subplot(5,1,1); title(['State: ' state])
 subplot(5,1,3)
 hold on
 plot(timeVector,yMeas, 'o', 'Color', [0.6,0.6,0.6]);
@@ -101,9 +106,60 @@ hold off
 ds = [day_label,day_label_future];
 legend({'Corrected'; 'Predicted'; 'Observed'; ['Max ' num2str(mx,3) ' ' ds{imx}]}, 'Location', 'NorthWest')
 subplot(5,1,5)
-set(gca, 'XTick', (1:timeVector(end)+future_days))
-set(gca, 'XTickLabel', [day_label,day_label_future])
+set(gca, 'XTick', (1:2:timeVector(end)+future_days))
+set(gca, 'XTickLabel', ds(1:2:end))
 xtickangle(90)
 subplot(5,1,5)
 title(['Last estimate of beta = ' num2str(xCorrectedUKF(end,5),3) ', std = ' num2str(squeeze(xCorrectedstd(end,5,5)),3)])
 xlabel('')
+
+%% Summary plot of Infections and beta
+clf
+subplot(2,1,1)
+k=3;
+    plot(timeVector,xCorrectedUKF(:,k), 'b', 'LineWidth', 2);
+    hold on
+    plot(timeVector,xCorrectedUKF(:,k)+2*squeeze(xCorrectedstd(:,k,k)), '--b','HandleVisibility','off')
+    plot(timeVector,xCorrectedUKF(:,k)-2*squeeze(xCorrectedstd(:,k,k)), '--b','HandleVisibility','off')
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k), 'k', 'LineWidth', 2)
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k)+2*squeeze(xPredictedstd(:,k,k)), '--k','HandleVisibility','off')
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k)-2*squeeze(xPredictedstd(:,k,k)), '--k','HandleVisibility','off')
+    hold off
+    ylabel(labels{k});
+    axis tight
+    grid on
+    set(gca, 'FontSize', 12)
+    hold on
+plot(timeVector,yMeas, 'o', 'Color', [0.6,0.6,0.6]);
+hold off
+[mx, imx] = max([xCorrectedUKF(:,3); xPredictedUKF(:,3)]);
+hold on
+plot([imx, imx], [yMeas(1), mx], 'r', 'LineWidth', 2)
+hold off
+ds = [day_label,day_label_future];
+legend({'Model Assimilation with data'; 'Model Prediction'; 'Observed Data'; ['Projected Infection Peak: ' ds{imx}]}, 'Location', 'NorthWest')
+ylabel('Number of Infectious Individuals')
+
+set(gca, 'XTick', (1:2:timeVector(end)+future_days))
+set(gca, 'XTickLabel', ds(1:2:end))
+xtickangle(90)
+
+subplot(2,1,2)
+k=5;
+    plot(timeVector,xCorrectedUKF(:,k), 'b', 'LineWidth', 2);
+    hold on
+    plot(timeVector,xCorrectedUKF(:,k)+2*squeeze(xCorrectedstd(:,k,k)), '--b','HandleVisibility','off')
+    plot(timeVector,xCorrectedUKF(:,k)-2*squeeze(xCorrectedstd(:,k,k)), '--b','HandleVisibility','off')
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k), 'k', 'LineWidth', 2)
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k)+2*squeeze(xPredictedstd(:,k,k)), '--k','HandleVisibility','off')
+    plot(timeVector(end)+(1:future_days), xPredictedUKF(:,k)-2*squeeze(xPredictedstd(:,k,k)), '--k','HandleVisibility','off')
+    hold off
+    ylabel(labels{k});
+    axis tight
+    grid on
+    set(gca, 'FontSize', 12)
+    ylabel('Probability of disease transmission')
+    set(gca, 'XTick', (1:2:timeVector(end)+future_days))
+set(gca, 'XTickLabel', ds(1:2:end))
+xtickangle(90)
+legend({'Model Assimilation with data'; 'Model Prediction'; 'Observed Data'; ['Projected Infection Peak: ' ds{imx}]}, 'Location', 'NorthEast')
