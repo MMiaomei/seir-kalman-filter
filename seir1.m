@@ -6,10 +6,10 @@ function dydt = seir1(t,y)
 %   Jacek Kierzenka and Lawrence F. Shampine
 %   Copyright 1984-2014 The MathWorks, Inc.
 
-N = 1000;
+N = 100000;
 beta  = y(5); %2.2;
-sigma = 1/5.2;
-gamma = 1/2.3;
+sigma = y(6); %1/5.2;
+gamma = y(7); %1/2.3;
 
 S = y(1);
 E = y(2);
@@ -20,4 +20,6 @@ dydt = [(-beta*S*I/N); ...
         beta*S*I/N - sigma*E; ...
         sigma*E - gamma*I; ...
         gamma*I; ...
+        0; ...
+        0; ...
         0];

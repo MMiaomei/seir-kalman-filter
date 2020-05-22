@@ -1,41 +1,37 @@
 clear; clc
 
-N = 100000;                         % Population size.
+N = 100000;
 
-% Initial state guess
-                    % SEIR    beta,sigma,gamma
-initialStateGuess = [N;5;0;0; 1;0.1;0.1];
-
+% Your initial state guess at time k, utilizing measurements up to time k-1: xhat[k|k-1]
+initialStateGuess = [N;5;0;0; 1;0.1;0.1]; % xhat[k|k-1]
 % Construct the filter
 ukf = unscentedKalmanFilter(...
-    @seirStateFcn,...               % State transition function
+    @seirStateFcn,...                % State transition function
     @seirMeasurementFcn,...         % Measurement function 
     initialStateGuess, ...
     'HasAdditiveProcessNoise', true);
 
 %%%%
-I_var = 10; % Variance of the measurement noise in I
-ukf.MeasurementNoise = diag([I_var]);
+R3 = 10; % Variance of the measurement noise v[k]
+ukf.MeasurementNoise = diag([R3]);
 
-% Process noise.
-ukf.ProcessNoise = diag([0.1 0.1 0.1 0.0 0.0 0.0 0.0]);
+ukf.ProcessNoise = diag([0.1 0.1 0.1 0.1 0.0 0.0 0.0]);
 
-T = 1;                              % 1 day step.
-timeVector = 0:T:500;               % 500 days.
+T = 0.5; % [s] Filter sample time
+timeVector = 0:T:500;
 [~,xTrue]=ode45(@seir1,timeVector,[N;5;0;0;  0.5;1/5.2;1/2.3]);
-%plot(xTrue)
+plot(xTrue)
 
-% Simulate the observed data.
+%rng(1); % Fix the random number generator for reproducible results
+yTrue = xTrue(:,[3]);
+yMeas = yTrue + randn(size(yTrue))*sqrt(diag([R3])); % sqrt(R): Standard deviation of noise
 
-yTrue = xTrue(:,[3]);                                       % True I from SEIR simulation.
-yMeas = yTrue + randn(size(yTrue))*sqrt(diag([I_var]));     % Add noise.
+%%%%
 
-%%%% Run the Kalman filter.
-
-Nsteps = size(yMeas,1);                 % Number of time steps
-xCorrectedUKF = zeros(Nsteps,7);        % Corrected state estimates
-PCorrected = zeros(Nsteps,7,7);         % Corrected state estimation error covariances
-e = zeros(Nsteps,1);                    % Residuals (or innovations)
+Nsteps = size(yMeas,1); % Number of time steps
+xCorrectedUKF = zeros(Nsteps,7); % Corrected state estimates
+PCorrected = zeros(Nsteps,7,7); % Corrected state estimation error covariances
+e = zeros(Nsteps,1); % Residuals (or innovations)
 
 for k=1:Nsteps
     % Let k denote the current time.

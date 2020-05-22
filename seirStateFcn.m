@@ -23,26 +23,29 @@ function x = seirStateFcn(x)
 % MATLAB Coder.
 
 % Euler integration of continuous-time dynamics x'=f(x) with sample time dt
-dt = 0.5;                               % [days] Sample time
+dt = 1;                               % [days] Sample time
 x = x + seirStateFcnContinuous(x)*dt;
 end
 
 function dxdt = seirStateFcnContinuous(x)
 %seirStateFcnContinuous Evaluate the SEIR for fixed parameters.
-sigma = 1/5.2;
-gamma = 1/2.3;
-N = 1000;
+
+N = 100000;
 
 S = x(1);
 E = x(2);
 I = x(3);
 R = x(4);
 beta  = x(5);
+sigma = x(6); %1/5.2;
+gamma = x(7); %1/2.3;
 
 dxdt = [(-beta*S*I/N); ...
         beta*S*I/N - sigma*E; ...
         sigma*E - gamma*I; ...
         gamma*I; ...
+        0; ...
+        0; ...
         0];
 
 end

@@ -27,5 +27,5 @@ E = xk(2);
 I = xk(3);
 R = xk(4);
 
-yk = [S, I];
+yk = [I];
 end
